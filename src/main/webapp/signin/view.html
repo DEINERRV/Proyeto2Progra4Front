@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electronic Medical Record</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
+    
+    <script src="../js/util.js"> </script>
+    <script src="controller.js"> </script> 
+</head>
+
+<body>
+
+    <section class="h-100 gradient-form" style="background-color: #eee;">
+        <div class="container py-5 h-100">
+            <div id="errorDiv"> </div>
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-xl-10">
+                    <div class="card rounded-3 text-black">
+                        <div class="p-md-5 mx-md-4">
+
+                            <div class="text-center">
+                                <img src="../img/logo.png" style="width: 185px;" alt="logo">
+                                <h4 class="mt-1 mb-5 pb-1">Doctor Registration</h4>
+                            </div>
+
+                            <form id="formulario">
+                                <div class="form-outline mb-3">
+                                    <label for="cedula" class="d-none"></label>
+                                    <input type="text" id="cedula" name="cedula" class="form-control"
+                                        placeholder="ID or Email address" required/>
+                                </div>
+
+                                <div class="form-outline mb-3">
+                                    <label for="contrasena" class="d-none"></label>
+                                    <input type="text" id="contrasena" name="contrasena" class="form-control" placeholder="Password" required/>
+                                </div>
+
+                                <div class="form-outline mb-3">
+                                    <label for="nombre" class="d-none"></label>
+                                    <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Name" required/>
+                                </div>
+                                
+                                <div class="form-outline mb-3">
+                                    <label for="correo" class="d-none"></label>
+                                    <input type="text" id="correo" name="correo" class="form-control" placeholder="E-Mail" required/>
+                                </div>
+
+                                <div class="form-outline mb-3">
+                                    <label for="locacion" class="d-none"></label>
+                                    <input type="text" id="ubicacion" name="locacion" class="form-control" placeholder="Location" required/>
+                                </div>
+                                
+                                <div class="form-outline mb-3">
+                                    <label for="especialidad" class="d-none"></label>
+                                    <input type="text" id="especialidad" name="especialidad" class="form-control"
+                                        placeholder="Speciatility" required/>
+                                </div>
+
+                                <div class="form-outline mb-3">
+                                    <label for="precio" class="d-none"></label>
+                                    <input type="number" id="precio" name="precio" class="form-control" placeholder="Fee" min="0" required/>
+                                </div>
+                                
+                                <div class="form-outline mb-3">
+                                    <label for="tiempo" class="d-none"></label>
+                                    <input type="number" id="tiempo" name="tiempo" class="form-control" placeholder="Frequenci" min="1" required/>
+                                </div>
+
+                                
+
+                                <div class="d-grid gap-2 d-md-block mt-4">
+                                    <button class="btn btn-primary" type="button" id="horario">Schedule</button>
+                                    <button class="btn btn-primary" type="button" id="registrar">Sing In</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Add modal -->
+    <div class="modal fade" id="add-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Doctor Schedule</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="horario">
+                    <div class="container">
+                        <div class="row schedule-row">
+                            
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" id="guardar-horario" data-bs-dismiss="modal">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script>
+</body>
+
+</html>

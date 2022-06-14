@@ -1,0 +1,140 @@
+/**PARA EL LOGIN**/
+.gradient-custom-2 {
+  /* fallback for old browsers */
+  background: #2b00ff;
+
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: -webkit-linear-gradient(to right, rgba(43, 0, 255, 0.7), rgba(0, 170, 255, 0.7));
+
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(to right, rgba(43, 0, 255, 0.7), rgba(0, 170, 255, 0.7))
+}
+    
+@media (min-width: 768px) {
+    .gradient-form {
+        height: 100vh !important;
+    }
+}
+@media (min-width: 769px) {
+    .gradient-custom-2 {
+        border-top-right-radius: .3rem;
+        border-bottom-right-radius: .3rem;
+    }
+}
+
+.schedule-body{
+    visibility: hidden;
+}
+.active{
+    visibility: visible;
+}
+
+/**PARA EL PERSONAS**/
+#tdMasc {
+	width: 20px; height:20px;
+	background-image:url(../img/M.png);
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+#tdFem {
+	width: 20px; height:20px;
+	background-image:url(../img/F.png);
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.icon {
+	width: 20px; height:20px;
+}
+input[type="text"]:valid.focus {box-shadow: 0 0 1px 1px #e77600;}
+input[type="text"]:valid.nofocus {box-shadow:none;}
+
+input.invalid {box-shadow: 0 0 1px 1px red;}
+
+
+/**PARA EL SIDEVAR**/
+body {
+  overflow-x: hidden;
+  font-size: 16px;
+}
+
+a{
+  text-decoration: none;
+}
+
+#viewport {
+  padding-left: 250px;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+
+#content {
+  width: 100%;
+  position: relative;
+  margin-right: 0;
+}
+
+/* Sidebar Styles */
+
+#sidebar {
+  z-index: 1000;
+  position: fixed;
+  left: 250px;
+  width: 250px;
+  height: 100%;
+  margin-left: -250px;
+  overflow-y: auto;
+  background: #37474F;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+
+#sidebar header {
+  background-color: #263238;
+  font-size: 20px;
+  line-height: 52px;
+  text-align: center;
+}
+
+
+#sidebar header a {
+  color: #fff;
+  display: block;
+  text-decoration: none;
+}
+
+#sidebar header a:hover {
+  color: #fff;
+}
+
+#sidebar .nav{
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  list-sytile: none;
+  height: 90%;
+  margin-top: 2rem;
+}
+
+#sidebar .nav a{
+  background: none;
+  border-bottom: 1px solid #455A64;
+  color: #CFD8DC;
+  font-size: 14px;
+  padding: 16px 24px;
+  display: block;
+}
+
+#sidebar .nav a:hover{
+  background: none;
+  color: #ECEFF1;
+}
+
+#sidebar .nav a i{
+  margin-right: 16px;
+}

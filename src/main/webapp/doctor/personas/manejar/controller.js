@@ -1,13 +1,17 @@
 var personas = new Array();
-var persona = {cedula: "", nombre: "", sexo: ""};
+var persona = {id:0,cedula:'',nombre:'',sexo:'',correo:'',enfermedades:[]};
 var doctor;
+var enfermedades;
 var mode = 'A'; //adding
+var perId;
 var backend = "http://localhost:8080/ExpedienteMedicoBackEnd/api";
 const NET_ERR = 999;
+
 
 function render() {
     $("#cedula").val(persona.cedula);
     $("#nombre").val(persona.nombre);
+    $("#correo").val(persona.correo);
     $("input[name='sexo']").val([persona.sexo]);
     $("#id").val(persona.id);
     switch (mode) {
@@ -20,23 +24,85 @@ function render() {
             $('#aplicar').off('click').on('click', update);
             break;
     }
-    $('#add-modal').modal('show');
+    cargarEnfermedades();
+    $('#add-modal').modal('show');  
 }
 
+function cargarEnfermedades(){
+    const request = new Request(backend + '/enfermedades', {method: 'GET', headers: {}});
+    (async () => {
+        try {
+            const response = await fetch(request);
+            if (!response.ok) {
+                errorMessage(response.status, $("#buscarDiv #errorDiv"));
+                return;
+            }
+            enfermedades = await response.json();
+            listEnfermedades()
+            renderEnfermedades(persona);
+        } catch (e) {
+            errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
+        }
+    })();
+}
+
+function listEnfermedades(){
+    $("#form-enfermedades").empty();
+    enfermedades.forEach((e) => {
+        $('#form-enfermedades').append(`
+        <div class="form-group form-enf">
+         <input class="form-check-input ml-0" type="checkbox" id="enfermedad" value="${e.id}-${e.nombre}">
+         <p class="ml-4">${e.nombre}</p>
+        </div> `);
+    });
+}
+
+function recolectarEnfermedades(){
+    persona.enfermedades = [];
+    $(".form-enf").each(
+    (i, e) => {
+      var obj = new Object();
+      if(e.querySelector("#enfermedad").checked){
+          var obj = new Object();
+          var datos = e.querySelector("#enfermedad").value.split('-');
+          obj.id = parseInt(datos[0]);
+          obj.nombre = datos[1];
+          persona.enfermedades.push(obj);
+      }
+    }
+  );
+}
+
+function renderEnfermedades(p){
+    p.enfermedades.forEach((e)=>{
+       $(".form-enf").each(
+        (i,d) => {
+            if(e.id.toString() === d.querySelector("#enfermedad").value.split('-')[0]){
+                d.querySelector("#enfermedad").checked = true;
+            }
+        }); 
+    });
+}
 
 function load() {
-    persona = Object.fromEntries((new FormData($("#formulario").get(0))).entries());
+    x = Object.fromEntries((new FormData($("#formulario").get(0))).entries());
+    persona.id = 0;
+    persona.cedula = x.cedula;
+    persona.nombre = x.nombre;
+    persona.sexo = x.sexo;
+    persona.correo = x.correo;
+    recolectarEnfermedades();
 }
 
 function reset() {
-    persona = {cedula: "", nombre: "", sexo: ""};
+    persona = {id:0,cedula:'',nombre:'',sexo:'',correo:'',enfermedades:[]};
 }
 
 function add() {
-    load();
     if (!validar())
         return;
     doctor = JSON.parse(sessionStorage.getItem('doctor'));
+    load();
     const request = new Request(backend + '/personas/'+doctor.cedula,
             {method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -61,7 +127,7 @@ function update() {
     load();
     if (!validar())
         return;
-    const request = new Request(backend + '/personas/' + persona.id,
+    const request = new Request(backend + '/personas/' + perId,
             {method: 'PUT', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(persona)});
     (async () => {
@@ -92,17 +158,18 @@ function row(listado, persona) {
     var tr = $("<tr />");
     tr.html(`<td>${persona.cedula}</td>
                  <td>${persona.nombre}</td>
-                <td class="invisible">${persona.id}</td>
-                 <td><img src='/img/${persona.sexo}.png' class='icon' ></td>
-                 <td id='edit'><img src='/img/edit.png'></td>`);
+                 <td><img src='../../../img/${persona.sexo}.png' class='icon' ></td>
+                 <td id='edit'><img src='../../../img/edit.png'></td>
+                 <td class="d-none">${persona.id}</td>`);
     tr.find("#edit").on("click", () => {
-        edit(persona.id);
+        edit(persona.cedula);
+        perId = persona.id;
     });
     listado.append(tr);
 }
 
-function edit(id) {
-    const request = new Request(backend + '/personas/' + id, {method: 'GET', headers: {}});
+function edit(cedula) {
+    const request = new Request(backend + '/personas/' + doctor.cedula +'/'+cedula, {method: 'GET', headers: {}});
     (async () => {
         try {
             const response = await fetch(request);
@@ -133,7 +200,6 @@ function search() {
 
 
 function fetchAndList() {
-    doctor = sessionStorage.getItem("doctor");
     const request = new Request(backend + '/personas/'+doctor.cedula, {method: 'GET', headers: {}});
     (async () => {
         try {
@@ -151,6 +217,7 @@ function fetchAndList() {
 }
 
 function loaded() {
+    cargarDoctor();
     crearSideVar('../../../');
     fetchAndList();
     $("#crear").click(makenew);

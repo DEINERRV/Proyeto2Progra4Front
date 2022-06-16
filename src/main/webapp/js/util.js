@@ -84,3 +84,16 @@ function errorMessage(status, place) {
             '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
     return;
 }
+
+function cargarDoctor(){
+    doctor = JSON.parse(sessionStorage.getItem('doctor'));
+    horario = doctor.horario;
+    $("#cedula").val(doctor.cedula);
+    $("#contrasena").val(doctor.contrasena);
+    $("#nombre").val(doctor.nombre);
+    $("#especialidad").val(doctor.especialidad);
+    $("#correo").val(doctor.correo);
+    $("#locacion").val(doctor.locacion);
+    $("#precio").val(doctor.precio);
+    $("#tiempo").val(doctor.tiempo);
+}

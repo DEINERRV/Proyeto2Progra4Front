@@ -138,3 +138,9 @@ a{
 #sidebar .nav a i{
   margin-right: 16px;
 }
+
+
+/* Formulario Enfermedades Persona */
+.form-enfermedades .nom-enf{
+    width: 5rem;
+}

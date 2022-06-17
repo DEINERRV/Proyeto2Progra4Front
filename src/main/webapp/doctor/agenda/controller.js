@@ -1,11 +1,48 @@
 var personas = new Array();
+var semana = new Array();
+var cita = {id:0,doctor:'',persona:0,texto:'',dia:'',from:'',to:''};
 var backend = "http://localhost:8080/ExpedienteMedicoBackEnd/api";
 const NET_ERR = 999;
+
+function getSemanaAndShow(tipo,dia) {
+    var url = '';
+    if(tipo == 'actual') url = tipo;
+    else if(tipo == 'anterior' || tipo == 'siguiente') url = tipo+'/'+dia;
+    
+    const request = new Request(backend + '/utiles/'+url, {method: 'GET', headers: {}});
+    (async () => {
+        try {
+            const response = await fetch(request);
+            if (!response.ok) {
+                errorMessage(response.status, $("#buscarDiv #errorDiv"));
+                return;
+            }
+            semana = await response.json();
+            genHeadCalendario();
+            genCalendario();
+        } catch (e) {
+            errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
+        }
+    })();
+}
+
+function genHeadCalendario(){
+    $("#id-head-calendar").empty();
+    $("#id-head-calendar").append(`
+        <th>&nbsp;</th>
+        <th width="20%">Lunes(${semana[0]})</th>
+        <th width="20%">Martes(${semana[1]})</th>
+        <th width="20%">Miercoles(${semana[2]})</th>
+        <th width="20%">Jueves(${semana[3]})</th>
+        <th width="20%">Viernes(${semana[4]})</th>
+    `)
+}
 
 function genCalendario() {
     var x = 0;
     var xs = '00';
     var horario = [];
+    $("#id-calendar").empty();
     for (i = 8; i < 20;i) {
         for(j=0;j<=4;j++){
             var dia = doctor.horario[j];
@@ -23,11 +60,11 @@ function genCalendario() {
         $("#id-calendar").append(
           `<tr class="tr-calendar">
             <td>${i}:${xs}</td>
-            <td class="${horario[0].clase} no-events" id="${horario[0].id}" data-cita="${i}:${xs}" data-dia="1" rowspan="1"></td>
-            <td class="${horario[1].clase} no-events" id="${horario[1].id}" data-cita="${i}:${xs}" data-dia="2" rowspan="1"></td>
-            <td class="${horario[2].clase} no-events" id="${horario[2].id}" data-cita="${i}:${xs}" data-dia="3" rowspan="1"></td>
-            <td class="${horario[3].clase} no-events" id="${horario[3].id}" data-cita="${i}:${xs}" data-dia="4" rowspan="1"></td>
-            <td class="${horario[4].clase} no-events" id="${horario[4].id}" data-cita="${i}:${xs}" data-dia="5" rowspan="1"></td>
+            <td class="${horario[0].clase} no-events" id="${horario[0].id}" data-cita="${i}:${xs}" data-dia="${semana[0]}" rowspan="1"></td>
+            <td class="${horario[1].clase} no-events" id="${horario[1].id}" data-cita="${i}:${xs}" data-dia="${semana[1]}" rowspan="1"></td>
+            <td class="${horario[2].clase} no-events" id="${horario[2].id}" data-cita="${i}:${xs}" data-dia="${semana[2]}" rowspan="1"></td>
+            <td class="${horario[3].clase} no-events" id="${horario[3].id}" data-cita="${i}:${xs}" data-dia="${semana[3]}" rowspan="1"></td>
+            <td class="${horario[4].clase} no-events" id="${horario[4].id}" data-cita="${i}:${xs}" data-dia="${semana[4]}" rowspan="1"></td>
           </tr>`
         );
 
@@ -49,9 +86,10 @@ function genCalendario() {
 
 
 function agregarPersonas(){
+    $('#persona').empty();
     personas.forEach((p)=>{
         $('#persona').append(`
-        <option value="${p.id}" selected>${p.cedula}-${p.nombre}</option>
+        <option value="${p.id}">${p.cedula}-${p.nombre}</option>
         `)
     });
 }
@@ -84,6 +122,9 @@ function show(dia,hora){
         min= '00';
     }
     else if(min<10) min = '0' + min.toString();
+    cita.dia = dia;
+    cita.from = hora;
+    cita.to = hor+':'+min;
     //Agregar infor de la cita al modal
     $('#info-cita').empty();
     $('#info-cita').append('Para el '+dia+'  desde '+hora+' hasta '+hor+':'+min);
@@ -91,10 +132,24 @@ function show(dia,hora){
     $('#add-modal').modal('show');
 }
 
+function load(){
+    cita.id = 0;
+    cita.doctor = doctor.cedula;
+    cita.persona = $('#persona option:selected').val();
+    cita.texto = " ";
+}
+
+function agregarCitas(){
+    
+}
+
 function loaded() {
     cargarDoctor();
-    genCalendario();
+    getSemanaAndShow('actual','');
     crearSideVar('../../');
+    $('#ant').click((e)=>{ getSemanaAndShow('anterior',semana[0])});
+    $('#prev').click((e)=>{ getSemanaAndShow('anterior',semana[0])})
+    $('#aplicar').off('click').on('click', agregarCitas);
 }
 
 $(loaded);

@@ -19,19 +19,17 @@
 
     <body>
         <div id="viewport">
-
+            
 
             <div class="p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <button type="button" class="btn btn-outline-dark" id="ant"><<<</button>
+                    <button type="button" class="btn btn-outline-dark" id="prev">>>></button>
+                </div>
+                
                 <table class="calendar table table-bordered p-5">
                     <thead>
-                        <tr>
-                            <th>&nbsp;</th>
-                            <th width="20%">Lunes</th>
-                            <th width="20%">Martes</th>
-                            <th width="20%">Miercoles</th>
-                            <th width="20%">Jueves</th>
-                            <th width="20%">Viernes</th>
-                        </tr>
+                        <tr id="id-head-calendar"></tr>
                     </thead>
                     <tbody id="id-calendar"> </tbody>
                 </table>

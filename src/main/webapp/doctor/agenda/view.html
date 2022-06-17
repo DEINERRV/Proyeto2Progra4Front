@@ -19,14 +19,14 @@
 
     <body>
         <div id="viewport">
-            
+
 
             <div class="p-3">
                 <div class="d-flex justify-content-between mb-2">
-                    <button type="button" class="btn btn-outline-dark" id="ant"><<<</button>
-                    <button type="button" class="btn btn-outline-dark" id="prev">>>></button>
+                    <button type="button" class="font-weight-bold btn btn-outline-dark" id="ant"><<<</button>
+                    <button type="button" class="font-weight-bold btn btn-outline-dark" id="prev">>>></button>
                 </div>
-                
+
                 <table class="calendar table table-bordered p-5">
                     <thead>
                         <tr id="id-head-calendar"></tr>
@@ -34,7 +34,7 @@
                     <tbody id="id-calendar"> </tbody>
                 </table>
             </div>
-            
+
             <!-- Add modal -->
             <div class="modal fade" id="add-modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" style="width: 400px">
@@ -56,6 +56,10 @@
                                 <div class="form-group">
                                     <label for="persona">Persona</label>
                                     <select id="persona" name="persona"></select>
+                                </div>
+                                <div class="form-group d-none" id="notas">
+                                    <label for="exampleFormControlTextarea1">Notas</label>
+                                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="10"></textarea>
                                 </div>
                             </div>
                             <div class="modal-footer d-flex justify-content-center">

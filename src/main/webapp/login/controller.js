@@ -10,16 +10,17 @@ function cargarDoctor(id){
     method: 'GET',
     headers: {}
   });
-  (async () => {
+  return (async () => {
     try {
       const response = await fetch(request);
       if (!response.ok) {
         errorMessage(response.status, $("#errorDiv"));
-        return;
+        return false;
       }
       
       doctor = await response.json();
       await guardarDoctor(doctor);
+      return true;
       
     } catch (e) {
       errorMessage(NET_ERR, $("#errorDiv"));
@@ -55,9 +56,7 @@ function autentificarDoctor() {
       }
       
       await cargarDoctor(aux.cedula);
-      await console.log("YA");
-      await (window.location.href = "../doctor/edit/view.html");
-      return;
+      window.location.href = "../doctor/edit/view.html";
       
     } catch (e) {
       errorMessage(NET_ERR, $("#errorDiv"));

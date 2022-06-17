@@ -195,7 +195,6 @@ function edit(cedula) {
         }
     })();
 
-
 }
 
 function makenew() {

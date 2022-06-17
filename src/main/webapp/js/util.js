@@ -6,7 +6,7 @@ function crearSideVar(root) {
       </header>
       <ul class="nav">
         <li>
-          <a href="#">
+          <a href="${root}/doctor/agenda/view.html">
             <i class="zmdi zmdi-view-dashboard"></i> Calendario
           </a>
         </li>

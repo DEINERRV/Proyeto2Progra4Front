@@ -160,7 +160,17 @@ function row(listado, persona) {
                  <td>${persona.nombre}</td>
                  <td><img src='../../../img/${persona.sexo}.png' class='icon' ></td>
                  <td id='edit'><img src='../../../img/edit.png'></td>
-                 <td class="d-none">${persona.id}</td>`);
+                 <td class="d-none">${persona.id}</td>
+                 <td class=""><div>
+                                    <input type="button" id="ver citas" class="btn btn-primary btn-block" value="ver citas">
+                                </div></td>
+                 <td class=""><div>
+                                    <input type="button" id="agregar cita" class="btn btn-primary btn-block" value="agregar cita">
+                                </div></td>
+                 <td class=""><div>
+                                    <input type="button" id="examenes" class="btn btn-primary btn-block" value="examenes">
+                                </div></td>
+`);
     tr.find("#edit").on("click", () => {
         edit(persona.cedula);
         perId = persona.id;

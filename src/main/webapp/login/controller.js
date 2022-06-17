@@ -20,7 +20,6 @@ function cargarDoctor(id){
       
       doctor = await response.json();
       await guardarDoctor(doctor);
-      return;
       
     } catch (e) {
       errorMessage(NET_ERR, $("#errorDiv"));
@@ -56,7 +55,7 @@ function autentificarDoctor() {
       }
       
       await cargarDoctor(aux.cedula);
-      
+      await console.log("YA");
       await (window.location.href = "../doctor/edit/view.html");
       return;
       

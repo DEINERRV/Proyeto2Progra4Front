@@ -8,46 +8,67 @@ var backend = "http://localhost:8080/ExpedienteMedicoBackEnd/api";
 const NET_ERR = 999;
 
 function show(dia, hora, modo, idUs) {
-    
-    //agregar las personas al modal
-    fetchAndList();
-    
-    //cambiar el modo
-    switch (modo) {
-        case 'no':
-            $('#notas').addClass('d-none');
-            $('#aplicar').off('click').on('click', agregarCitas);
-            break;
-        case 'si':
-            //Traer la persona de la cita
-            cargarPer(parseInt(idUs));
-            $('#notas').removeClass('d-none');
-            $('#aplicar').off('click').on('click', console.log("EDIT"));
-            if(typeof(persona)!=='undefined'){$('#persona').val(persona.id.toString());}
-            break;
-    }
-    
-    
-    //Abajo, obtener el hasta
-    var hor = parseInt(hora.split(':')[0]);
-    if(hor<10){
-        hora = '0'+hora;
-        hor = '0'+hor;
-    }
-    var min = parseInt(hora.split(':')[1]) + doctor.tiempo;
-    if (min >= 60) {
-        hor++;
-        min = '00';
-    } else if (min < 10)
-        min = '0' + min.toString();
-    cita.dia = dia;
-    cita.from = hora;
-    cita.to = hor + ':' + min;
-    //Agregar infor de la cita al modal
-    $('#info-cita').empty();
-    $('#info-cita').append('Para el ' + dia + '  desde ' + hora + ' hasta ' + hor + ':' + min);
-    //mostrar el modal
-    $('#add-modal').modal('show');
+    var hoy;
+    const request = new Request(backend + '/utiles/hoy', {method: 'GET', headers: {}});
+    (async () => {
+        try {
+            const response = await fetch(request);
+            if (!response.ok) {
+                errorMessage(response.status, $("#buscarDiv #errorDiv"));
+                return;
+            }
+            hoy = await response.json();
+            hoy = new Date(hoy);
+            
+            if (new Date(dia) < hoy && modo == 'no')
+                return;
+            
+            //agregar las personas al modal
+            fetchAndList();
+
+            //cambiar el modo
+            switch (modo) {
+                case 'no':
+                    $('#notas').addClass('d-none');
+                    $('#aplicar').off('click').on('click', agregarCitas);
+                    break;
+                case 'si':
+                    //Traer la persona de la cita
+                    cargarPer(parseInt(idUs));
+                    $('#notas').removeClass('d-none');
+                    $('#aplicar').off('click').on('click', console.log("EDIT"));
+                    if (typeof (persona) !== 'undefined') {
+                        $('#persona').val(persona.id.toString());
+                    }
+                    break;
+            }
+
+
+            //Abajo, obtener el hasta
+            var hor = parseInt(hora.split(':')[0]);
+            if (hor < 10) {
+                hora = '0' + hora;
+                hor = '0' + hor;
+            }
+            var min = parseInt(hora.split(':')[1]) + doctor.tiempo;
+            if (min >= 60) {
+                hor++;
+                min = '00';
+            } else if (min < 10)
+                min = '0' + min.toString();
+            cita.dia = dia;
+            cita.from = hora;
+            cita.to = hor + ':' + min;
+            //Agregar infor de la cita al modal
+            $('#info-cita').empty();
+            $('#info-cita').append('Para el ' + dia + '  desde ' + hora + ' hasta ' + hor + ':' + min);
+            //mostrar el modal
+            $('#add-modal').modal('show');
+
+        } catch (e) {
+            errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
+        }
+    })();
 }
 
 function load() {
@@ -57,7 +78,7 @@ function load() {
     cita.texto = " ";
 }
 
-function reset(){
+function reset() {
     cita.id = 0;
     cita.per = 0;
     cita.dia = '';
@@ -127,9 +148,13 @@ function getSemanaAndShow(tipo, dia) {
                 return;
             }
             semana = await response.json();
-            await genHeadCalendario();
-            await genCalendario();
-            getCitasAndVal();
+            genHeadCalendario();
+            genCalendario();
+            await getCitasAndVal();
+            $(".tr-calendar #cita").click((e) => {
+                show(e.currentTarget.dataset.dia, e.currentTarget.dataset.cita, e.currentTarget.dataset.reservada, e.currentTarget.dataset.usu);
+            });
+
         } catch (e) {
             errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
         }
@@ -152,6 +177,7 @@ function genCalendario() {
     var x = 0;
     var xs = '00';
     var horario = [];
+    const request = new Request(backend + '/utiles/hoy', {method: 'GET', headers: {}});
     $("#id-calendar").empty();
     for (i = 8; i < 20; i) {
         for (j = 0; j <= 4; j++) {
@@ -186,41 +212,37 @@ function genCalendario() {
         } else if (x < 10)
             xs = '0' + xs;
     }
-
-    $(".tr-calendar #cita").click((e) => {
-        show(e.currentTarget.dataset.dia, e.currentTarget.dataset.cita,e.currentTarget.dataset.reservada,e.currentTarget.dataset.usu);
-    });
 }
 
 
 ///////////////////////////////////////////
-function getCitasAndVal() {
+async function getCitasAndVal() {
     var numDia = 1;
-    semana.forEach((d) => {
-        const request = new Request(backend + '/citas/' + doctor.cedula+'/'+d, {method: 'GET', headers: {}});
-        return (async () => {
-            try {
-                const response = await fetch(request);
-                if (!response.ok) {
-                    errorMessage(response.status, $("#buscarDiv #errorDiv"));
-                    return;
-                }
-                citasDia = await response.json();
-                valAgenda(citasDia,numDia);
-                numDia++;
-            } catch (e) {
-                errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
+    await semana.reduce(async (memo, d) => {
+        try {
+            await memo;
+            const request = new Request(backend + '/citas/' + doctor.cedula + '/' + d, {method: 'GET', headers: {}});
+            const response = await fetch(request);
+            if (!response.ok) {
+                errorMessage(response.status, $("#buscarDiv #errorDiv"));
+                return;
             }
-        })();
-    });
+            citasDia = await response.json();
+            valAgenda(citasDia, numDia);
+            numDia++;
+        } catch (e) {
+            errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
+        }
+    }, undefined);
+
 }
 
 function valAgenda(list, numDia) {
     list.forEach((c) => {
-        var aux = ".tr-calendar #cita ."+numDia;
-        try{
-            $(aux).each((i,d) => {
-                if ($(d).parent()[0].dataset.cita == c.from){
+        var aux = ".tr-calendar #cita ." + numDia;
+        try {
+            $(aux).each((i, d) => {
+                if ($(d).parent()[0].dataset.cita == c.from) {
                     $(d).parent().addClass("bg-dark");
                     $(d).text('RESERVADA');
                     $(d).parent()[0].dataset.usu = c.per;
@@ -228,7 +250,8 @@ function valAgenda(list, numDia) {
                     throw 'a';
                 }
             })
-        }catch(e){}
+        } catch (e) {
+        }
     });
 }
 
@@ -248,7 +271,7 @@ function agregarCitas() {
                 return;
             }
             getCitasAndVal();
-            
+
             $('#add-modal').modal('hide');
         } catch (e) {
             errorMessage(NET_ERR, $("#add-modal #errorDiv"));
@@ -267,7 +290,7 @@ function loaded() {
         getSemanaAndShow('anterior', semana[0])
     });
     $('#prev').click((e) => {
-        getSemanaAndShow('anterior', semana[0])
+        getSemanaAndShow('siguiente', semana[0])
     })
     $('#aplicar').off('click').on('click', agregarCitas);
 }

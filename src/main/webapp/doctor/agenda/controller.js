@@ -7,7 +7,7 @@ var cita = {id: 0, doc: '', per: 0, texto: '', dia: '', from: '', to: ''};
 var backend = "http://localhost:8080/ExpedienteMedicoBackEnd/api";
 const NET_ERR = 999;
 
-function show(dia, hora, modo, idUs) {
+function show(dia, hora, modo, idUs, idC, text) {
     var hoy;
     const request = new Request(backend + '/utiles/hoy', {method: 'GET', headers: {}});
     (async () => {
@@ -19,24 +19,26 @@ function show(dia, hora, modo, idUs) {
             }
             hoy = await response.json();
             hoy = new Date(hoy);
-            
+
             if (new Date(dia) < hoy && modo == 'no')
                 return;
-            
+
             //agregar las personas al modal
-            fetchAndList();
+            await fetchAndList();
 
             //cambiar el modo
             switch (modo) {
                 case 'no':
+                    $('titulo').val('Agregar Cita');
                     $('#notas').addClass('d-none');
                     $('#aplicar').off('click').on('click', agregarCitas);
                     break;
                 case 'si':
+                    $('#titulo').text('Editar Cita');
                     //Traer la persona de la cita
-                    cargarPer(parseInt(idUs));
+                    await cargarPer(parseInt(idUs));
                     $('#notas').removeClass('d-none');
-                    $('#aplicar').off('click').on('click', console.log("EDIT"));
+                    $('#aplicar').off('click').on('click', editCita);
                     if (typeof (persona) !== 'undefined') {
                         $('#persona').val(persona.id.toString());
                     }
@@ -62,8 +64,11 @@ function show(dia, hora, modo, idUs) {
             //Agregar infor de la cita al modal
             $('#info-cita').empty();
             $('#info-cita').append('Para el ' + dia + '  desde ' + hora + ' hasta ' + hor + ':' + min);
+            //Borra lo que estaba en las notas
+            $('#texto').val(text);
             //mostrar el modal
             $('#add-modal').modal('show');
+            cita.id = idC;
 
         } catch (e) {
             errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
@@ -72,10 +77,9 @@ function show(dia, hora, modo, idUs) {
 }
 
 function load() {
-    cita.id = 0;
     cita.doc = doctor.cedula;
     cita.per = parseInt($('#persona option:selected').val());
-    cita.texto = " ";
+    cita.texto = $('#texto').val();
 }
 
 function reset() {
@@ -87,21 +91,21 @@ function reset() {
     cita.texto = '';
 }
 
-function fetchAndList() {
+async function fetchAndList() {
     const request = new Request(backend + '/personas/' + doctor.cedula, {method: 'GET', headers: {}});
-    (async () => {
-        try {
-            const response = await fetch(request);
-            if (!response.ok) {
-                errorMessage(response.status, $("#buscarDiv #errorDiv"));
-                return;
-            }
-            personas = await response.json();
-            agregarPersonas();
-        } catch (e) {
-            errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
+
+    try {
+        const response = await fetch(request);
+        if (!response.ok) {
+            errorMessage(response.status, $("#buscarDiv #errorDiv"));
+            return;
         }
-    })();
+        personas = await response.json();
+        agregarPersonas();
+    } catch (e) {
+        errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
+    }
+
 }
 
 function agregarPersonas() {
@@ -113,20 +117,19 @@ function agregarPersonas() {
     });
 }
 
-function cargarPer(id) {
+async function cargarPer(id) {
     const request = new Request(backend + '/personas/id/' + id, {method: 'GET', headers: {}});
-    (async () => {
-        try {
-            const response = await fetch(request);
-            if (!response.ok) {
-                errorMessage(response.status, $("#buscarDiv #errorDiv"));
-                return;
-            }
-            persona = await response.json();
-        } catch (e) {
-            errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
+
+    try {
+        const response = await fetch(request);
+        if (!response.ok) {
+            errorMessage(response.status, $("#buscarDiv #errorDiv"));
+            return;
         }
-    })();
+        persona = await response.json();
+    } catch (e) {
+        errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
+    }
 
 }
 
@@ -152,7 +155,8 @@ function getSemanaAndShow(tipo, dia) {
             genCalendario();
             await getCitasAndVal();
             $(".tr-calendar #cita").click((e) => {
-                show(e.currentTarget.dataset.dia, e.currentTarget.dataset.cita, e.currentTarget.dataset.reservada, e.currentTarget.dataset.usu);
+                show(e.currentTarget.dataset.dia, e.currentTarget.dataset.cita, e.currentTarget.dataset.reservada,
+                        e.currentTarget.dataset.usu, e.currentTarget.dataset.id, e.currentTarget.dataset.text);
             });
 
         } catch (e) {
@@ -247,6 +251,8 @@ function valAgenda(list, numDia) {
                     $(d).text('RESERVADA');
                     $(d).parent()[0].dataset.usu = c.per;
                     $(d).parent()[0].dataset.reservada = "si";
+                    $(d).parent()[0].dataset.id = c.id;
+                    $(d).parent()[0].dataset.text = c.texto;
                     throw 'a';
                 }
             })
@@ -280,6 +286,28 @@ function agregarCitas() {
     reset();
 }
 
+
+function editCita() {
+    load();
+    const request = new Request(backend + '/citas',
+            {method: 'PUT', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(cita)});
+    (async () => {
+        try {
+            const response = await fetch(request);
+            if (!response.ok) {
+                errorMessage(response.status, $("#add-modal #errorDiv"));
+                return;
+            }
+            getCitasAndVal();
+            
+            $('#add-modal').modal('hide');
+        } catch (e) {
+            errorMessage(NET_ERR, $("#add-modal #errorDiv"));
+        }
+    })();
+    reset();
+}
 
 //////////////////////////////////
 function loaded() {

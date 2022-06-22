@@ -74,7 +74,10 @@ function row(listado, persona) {
         perId = persona.id;
     });
     tr.find('#verCitas').on('click',()=>{
-        citas(persona.cedula);
+        redirect(persona.cedula,"../../../doctor/personas/citas/view.html");
+    });
+    tr.find('#examenes').on('click',()=>{
+        redirect(persona.cedula,"../../../doctor/personas/examenes/view.html");
     });
     listado.append(tr);
 }
@@ -221,7 +224,7 @@ function edit(cedula) {
     })();
 }
 
-function citas(cedula) {
+function redirect(cedula,dir) {
     const request = new Request(backend + '/personas/' + doctor.cedula +'/'+cedula, {method: 'GET', headers: {}});
     (async () => {
         try {
@@ -232,7 +235,7 @@ function citas(cedula) {
             }
             persona = await response.json();
             await sessionStorage.setItem("persona", JSON.stringify(persona));
-            window.location.href = "../../../doctor/personas/citas/view.html";
+            window.location.href = dir;
         } catch (e) {
             errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
         }

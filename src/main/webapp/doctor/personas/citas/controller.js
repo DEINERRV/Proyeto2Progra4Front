@@ -67,8 +67,8 @@ function row(listado, cita) {
 }
 
 ////////////////////////////////////////////////////////////
-function cargarExams(id) {
-    const request = new Request(backend + '/examenes/' + id + '/pdf', {method: 'GET', headers: {}});
+function cargarExams(idCita) {
+    const request = new Request(backend + '/examenes/' + idCita + '/pdf', {method: 'GET', headers: {}});
     (async () => {
         try {
             const response = await fetch(request);
@@ -77,7 +77,7 @@ function cargarExams(id) {
                 return;
             }
             examenes = await response.json();
-            $('#id-cita').text(id);
+            $('#id-cita').text(idCita);
             showExamenes(examenes);
         } catch (e) {
             errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
@@ -90,7 +90,7 @@ function showExamenes(examenes){
     examenes.forEach((e)=>{
         $('#examenes').append(`
             <li class="list-group-item d-flex justify-content-between">
-                <a href="${backend}/examenes/${cita.id}/${e.nombre}/pdf">${e.nombre}</a>
+                <a href="${backend}/examenes/${persona.id}/${cita.id}/${e.nombre}/pdf">${e.nombre}</a>
                 <div > <button type="button" class="close" id="elim" data-idPDF="${e.id}"> <span aria-hidden="true">&times;</span> </button> </div>
             </li>
             
@@ -101,6 +101,11 @@ function showExamenes(examenes){
 }
 
 async function addExamen() {
+    if (!validar()){
+      errorMessage("Falta Algo", $("#add-modal-2 #errorDiv"));
+      return;
+    }
+    
     var idCita = parseInt($('#id-cita').text());
     pdf.nombre = $('#nom').val();
     pdf.idPersona = persona.id;
@@ -125,10 +130,10 @@ async function addExamen() {
     }
 }
 
-async function addPDF(id,nom) {
+async function addPDF(idCita,nom) {
     var pdfData = new FormData();
     pdfData.append("pdf", $("#examen").get(0).files[0]);
-    let request = new Request(backend + '/examenes/' + id +'/' + nom + '/pdf', {method: 'POST', body: pdfData});
+    let request = new Request(backend + '/examenes/'+persona.id + '/' + idCita +'/' + nom + '/pdf', {method: 'POST', body: pdfData});
     const response = await fetch(request);
     if (!response.ok) {
         errorMessage(response.status, $("#add-modal-2 #errorDiv"));
@@ -161,6 +166,8 @@ function cargarCita(id) {
                 return;
             }
             cita = await response.json();
+            if(parseInt(cita.from.split(':')[0]) < 10) cita.from = '0'+cita.from;
+            if(parseInt(cita.to.split(':')[0]) < 10) cita.to = '0'+cita.to;
             show();
         } catch (e) {
             errorMessage(NET_ERR, $("#add-modal #errorDiv"));
@@ -170,9 +177,10 @@ function cargarCita(id) {
 
 function show() {
     //Agregar la persona
+    $('#persona').empty();
     $('#persona').append(`
         <option value="${persona.id}">${persona.cedula}-${persona.nombre}</option>
-        `)
+        `);
     //Agregar infor de la cita al modal
     $('#info-cita').empty();
     $('#info-cita').append('Para el ' + cita.dia + '  desde ' + cita.from + ' hasta ' + cita.to);

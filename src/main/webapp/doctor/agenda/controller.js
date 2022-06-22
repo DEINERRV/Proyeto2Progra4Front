@@ -3,11 +3,11 @@ var persona;
 var semana = new Array();
 var citasDia = new Array();
 mode = 'A';
-var cita = {id: 0, doc: '', per: 0, texto: '', dia: '', from: '', to: ''};
+var cita = {id: 0, doc: '', per: 0, texto: '',motivo:'',prescripcion:'', dia: '', from: '', to: ''};
 var backend = "http://localhost:8080/ExpedienteMedicoBackEnd/api";
 const NET_ERR = 999;
 
-function show(dia, hora, modo, idUs, idC, text) {
+function show(dia, hora, modo, idUs, idC, text,motivo,prescripcion) {
     var hoy;
     const request = new Request(backend + '/utiles/hoy', {method: 'GET', headers: {}});
     (async () => {
@@ -32,6 +32,8 @@ function show(dia, hora, modo, idUs, idC, text) {
                     $('titulo').val('Agregar Cita');
                     $('#notas').addClass('d-none');
                     $('#aplicar').off('click').on('click', agregarCitas);
+                    $('#modal-tam').removeClass('modal-lg');
+                    $('#modal-tam').css({'width':'400px'});
                     break;
                 case 'si':
                     $('#titulo').text('Editar Cita');
@@ -42,6 +44,8 @@ function show(dia, hora, modo, idUs, idC, text) {
                     if (typeof (persona) !== 'undefined') {
                         $('#persona').val(persona.id.toString());
                     }
+                    $('#modal-tam').addClass('modal-lg');
+                    $('#modal-tam').css({'width':''});
                     break;
             }
 
@@ -64,8 +68,10 @@ function show(dia, hora, modo, idUs, idC, text) {
             //Agregar infor de la cita al modal
             $('#info-cita').empty();
             $('#info-cita').append('Para el ' + dia + '  desde ' + hora + ' hasta ' + hor + ':' + min);
-            //Borra lo que estaba en las notas
+            //Para el campo de texto
             $('#texto').val(text);
+            $('#motivo').val(motivo);
+            $('#prescripcion').val(prescripcion);
             //mostrar el modal
             $('#add-modal').modal('show');
             cita.id = idC;
@@ -80,6 +86,8 @@ function load() {
     cita.doc = doctor.cedula;
     cita.per = parseInt($('#persona option:selected').val());
     cita.texto = $('#texto').val();
+    cita.motivo = $('#motivo').val();
+    cita.prescripcion = $('#prescripcion').val();
 }
 
 function reset() {
@@ -89,6 +97,8 @@ function reset() {
     cita.from = '';
     cita.to = '';
     cita.texto = '';
+    cita.motivo = '';
+    cita.prescripcion = '';
 }
 
 async function fetchAndList() {
@@ -156,7 +166,8 @@ function getSemanaAndShow(tipo, dia) {
             await getCitasAndVal();
             $(".tr-calendar #cita").click((e) => {
                 show(e.currentTarget.dataset.dia, e.currentTarget.dataset.cita, e.currentTarget.dataset.reservada,
-                        e.currentTarget.dataset.usu, e.currentTarget.dataset.id, e.currentTarget.dataset.text);
+                    e.currentTarget.dataset.usu, e.currentTarget.dataset.id, e.currentTarget.dataset.text,
+                    e.currentTarget.dataset.motivo, e.currentTarget.dataset.prescripcion);
             });
 
         } catch (e) {
@@ -253,6 +264,8 @@ function valAgenda(list, numDia) {
                     $(d).parent()[0].dataset.reservada = "si";
                     $(d).parent()[0].dataset.id = c.id;
                     $(d).parent()[0].dataset.text = c.texto;
+                    $(d).parent()[0].dataset.motivo = c.motivo;
+                    $(d).parent()[0].dataset.prescripcion = c.prescripcion;
                     throw 'a';
                 }
             })

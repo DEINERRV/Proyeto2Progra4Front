@@ -81,7 +81,7 @@ function errorMessage(status, place) {
     place.empty();
     place.append('<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
             error +
-            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+            '<button type="button" class="ml-2 bg-transparent btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">X</span></button></div>');
     return;
 }
 

@@ -28,6 +28,59 @@ function render() {
     $('#add-modal').modal('show');  
 }
 
+function fetchAndList() {
+    const request = new Request(backend + '/personas/'+doctor.cedula, {method: 'GET', headers: {}});
+    (async () => {
+        try {
+            const response = await fetch(request);
+            if (!response.ok) {
+                errorMessage(response.status, $("#buscarDiv #errorDiv"));
+                return;
+            }
+            personas = await response.json();
+            list();
+        } catch (e) {
+            errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
+        }
+    })();
+}
+
+function list() {
+    $("#listado").html("");
+    personas.forEach((p) => {
+        row($("#listado"), p);
+    });
+}
+
+function row(listado, persona) {
+    var tr = $("<tr />");
+    tr.html(`<td>${persona.cedula}</td>
+                 <td>${persona.nombre}</td>
+                 <td><img src='../../../img/${persona.sexo}.png' class='icon' ></td>
+                 <td id='edit'><img src='../../../img/edit.png'></td>
+                 <td class="d-none">${persona.id}</td>
+                 <td class=""><div>
+                                    <input type="button" id="verCitas" class="btn btn-primary btn-block" value="ver citas">
+                                </div></td>
+                 <td class=""><div>
+                                    <input type="button" id="agregar cita" class="btn btn-primary btn-block" value="agregar cita">
+                                </div></td>
+                 <td class=""><div>
+                                    <input type="button" id="examenes" class="btn btn-primary btn-block" value="examenes">
+                                </div></td>
+    `);
+    tr.find("#edit").on("click", () => {
+        edit(persona.cedula);
+        perId = persona.id;
+    });
+    tr.find('#verCitas').on('click',()=>{
+        citas(persona.cedula);
+    });
+    listado.append(tr);
+}
+
+
+////////////////////////////////////////////////////////////
 function cargarEnfermedades(){
     const request = new Request(backend + '/enfermedades', {method: 'GET', headers: {}});
     (async () => {
@@ -84,6 +137,7 @@ function renderEnfermedades(p){
     });
 }
 
+////////////////////////////////////////////////////////////
 function load() {
     x = Object.fromEntries((new FormData($("#formulario").get(0))).entries());
     persona.id = 0;
@@ -98,6 +152,7 @@ function reset() {
     persona = {id:0,cedula:'',nombre:'',sexo:'',correo:'',enfermedades:[]};
 }
 
+////////////////////////////////////////////////////////////
 function add() {
     if (!validar())
         return;
@@ -147,37 +202,7 @@ function update() {
 }
 
 
-function list() {
-    $("#listado").html("");
-    personas.forEach((p) => {
-        row($("#listado"), p);
-    });
-}
-
-function row(listado, persona) {
-    var tr = $("<tr />");
-    tr.html(`<td>${persona.cedula}</td>
-                 <td>${persona.nombre}</td>
-                 <td><img src='../../../img/${persona.sexo}.png' class='icon' ></td>
-                 <td id='edit'><img src='../../../img/edit.png'></td>
-                 <td class="d-none">${persona.id}</td>
-                 <td class=""><div>
-                                    <input type="button" id="ver citas" class="btn btn-primary btn-block" value="ver citas">
-                                </div></td>
-                 <td class=""><div>
-                                    <input type="button" id="agregar cita" class="btn btn-primary btn-block" value="agregar cita">
-                                </div></td>
-                 <td class=""><div>
-                                    <input type="button" id="examenes" class="btn btn-primary btn-block" value="examenes">
-                                </div></td>
-`);
-    tr.find("#edit").on("click", () => {
-        edit(persona.cedula);
-        perId = persona.id;
-    });
-    listado.append(tr);
-}
-
+////////////////////////////////////////////////////////////
 function edit(cedula) {
     const request = new Request(backend + '/personas/' + doctor.cedula +'/'+cedula, {method: 'GET', headers: {}});
     (async () => {
@@ -194,7 +219,24 @@ function edit(cedula) {
             errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
         }
     })();
+}
 
+function citas(cedula) {
+    const request = new Request(backend + '/personas/' + doctor.cedula +'/'+cedula, {method: 'GET', headers: {}});
+    (async () => {
+        try {
+            const response = await fetch(request);
+            if (!response.ok) {
+                errorMessage(response.status, $("#buscarDiv #errorDiv"));
+                return;
+            }
+            persona = await response.json();
+            await sessionStorage.setItem("persona", JSON.stringify(persona));
+            window.location.href = "../../../doctor/personas/citas/view.html";
+        } catch (e) {
+            errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
+        }
+    })();
 }
 
 function makenew() {
@@ -208,23 +250,7 @@ function search() {
 }
 
 
-function fetchAndList() {
-    const request = new Request(backend + '/personas/'+doctor.cedula, {method: 'GET', headers: {}});
-    (async () => {
-        try {
-            const response = await fetch(request);
-            if (!response.ok) {
-                errorMessage(response.status, $("#buscarDiv #errorDiv"));
-                return;
-            }
-            personas = await response.json();
-            list();
-        } catch (e) {
-            errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
-        }
-    })();
-}
-
+////////////////////////////////////////////////////////////
 function loaded() {
     cargarDoctor();
     crearSideVar('../../../');

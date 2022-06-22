@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Electronic Medical Record</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.12/css/all.css">
+
+        <link rel="stylesheet" href="../../../css/styles.css">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
+
+        <script src="../../../js/util.js"></script>
+        <script src="controller.js"></script> 
+    </head>
+
+    <body>
+        <div id="viewport">
+            
+        
+        <div class="container" style="width:100% " >
+                <div id="errorDiv"></div>
+                <!-- List -->
+                <div class="card bg-light">
+                    <div>
+                         <h4 class="card-title mt-3 text-center" id="titulo-per"></h4> 
+                         <div id="info-per" class="mt-2 h-25 d-flex flex-column justify-content-center align-items-center">
+                             <img id="img-per" src="#" alt="Foto Persona"/>
+                         </div>
+                         <div class="mt-2">
+                             <h5 class="card-title text-center">Enfermedades</h5>
+                             <div id="enf-per" class="d-flex flex-column justify-content-center align-items-center"> </div>
+                         </div>
+                        
+                    </div>
+                      
+                    <div class="card-body mx-auto w-75" id="buscarDiv" >
+
+                        <div class="table-responsive " style="overflow: auto">
+                            <table class="table table-striped table-hover">
+                                <thead><tr>
+                                        <th scope="col">Fecha</th>
+                                        <th scope="col">Hora</th>
+                                        <th scope="col">Notas</th>
+                                </tr></thead>
+                                <tbody id="listado">
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div> 
+            
+            
+            <!-- Add modal -->
+            <div class="modal fade" id="add-modal" tabindex="-1" role="dialog">
+                <div class="modal-lg modal-dialog" id="modal-tam">
+                    <div class="modal-content">
+                        <div class="modal-header" >
+                            <div class="d-flex justify-content-center" style="width: 90%">  <img class="img-circle" id="img_logo" src="../../img/user.png" style="max-width: 50px; max-height: 50px"> </div>
+                            <div > <button type="button" class="close" data-dismiss="modal"> <span aria-hidden="true">&times;</span> </button> </div>
+                        </div>
+                        <form id="formulario" >
+                            <div class="modal-body">
+                                <div id="div-login-msg">
+                                    <div id="icon-login-msg" ></div>
+                                    <span id="titulo">Editar Cita</span>
+                                </div>
+                                <br>
+                                <div>
+                                    <p id="info-cita"></p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="persona">Persona</label>
+                                    <select id="persona" name="persona"></select>
+                                </div>
+                                <div class="form-group" id="notas">
+                                    <label for="motivo">Motivo</label>
+                                    <textarea class="form-control mb-2" id="motivo" name="motivo" rows="1"></textarea>
+                                    
+                                    <label for="texto">Notas</label>
+                                    <textarea class="form-control mb-2" id="texto" name="texto" rows="7"></textarea>
+                                    
+                                    <label for="prescripcion">Prescripcion</label>
+                                    <textarea class="form-control mb-2" id="prescripcion" name="prescripcion" rows="4"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer d-flex justify-content-center">
+                                <div>
+                                    <input type="button" id="aplicar" class="btn btn-primary btn-lg btn-block" value="Aplicar">
+                                </div>
+                            </div>
+                        </form>
+                        <div id="errorDiv" style="width:70%; margin: auto;"></div>
+                    </div>
+                </div>              
+            </div>
+            
+        
+        </div>
+
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+        </script>
+    </body>
+
+</html>

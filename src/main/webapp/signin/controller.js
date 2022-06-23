@@ -1,13 +1,13 @@
 var doctor = {
-  cedula: "",
-  nombre: "",
-  especialidad: "",
-  correo:"",
-  locacion:"",
-  contrasena:"",
-  precio: 0,
-  tiempo: 0,
-  horario:[]
+    cedula: "",
+    nombre: "",
+    especialidad: "",
+    correo: "",
+    locacion: "",
+    contrasena: "",
+    precio: 0,
+    tiempo: 0,
+    horario: []
 };
 var horario = [];
 var dias = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -16,69 +16,71 @@ const NET_ERR = 999;
 
 
 function reset() {
-  doctor = {
-    cedula: "",
-    nombre: "",
-    especialidad: "",
-    correo:"",
-    locacion:"",
-    contrasena:"",
-    precio: 0,
-    tiempo: 0,
-    horario:[]
-  };
-  horario = [];
-  $("#formulario")[0].reset();
+    doctor = {
+        cedula: "",
+        nombre: "",
+        especialidad: "",
+        correo: "",
+        locacion: "",
+        contrasena: "",
+        precio: 0,
+        tiempo: 0,
+        horario: []
+    };
+    horario = [];
+    $("#formulario")[0].reset();
 }
 
 
 function load() {
-  doctor = Object.fromEntries((new FormData($("#formulario").get(0))).entries());
-  guardarHorario();
-  doctor.horario = horario;
+    doctor = Object.fromEntries((new FormData($("#formulario").get(0))).entries());
+    guardarHorario();
+    doctor.horario = horario;
+}
+
+async function addImagen() {
+    var imagenData = new FormData();
+    imagenData.append("cedula", doctor.cedula);
+    imagenData.append("imagen", $("#imagen").get(0).files[0]);
+    let request = new Request(backend + '/doctores/' + doctor.cedula + '/imagen', {method: 'POST', body: imagenData});
+    const response = await fetch(request);
+    //if (!response.ok) {errorMessage(response.status,$("#add-modal #errorDiv"));return;}              
 }
 
 function add() {
-  if (!validar()){
-      errorMessage("Debe llenar todos los campos", $("#errorDiv"));
-      return;
-  }
-  load();
-  const request = new Request(backend + '/doctores', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(doctor)
-  });
-  (async () => {
-    try {
-      const response = await fetch(request);
-      if (!response.ok) {
-        errorMessage(response.status, $("#errorDiv"));
+    if (!validar()) {
+        errorMessage("Debe llenar todos los campos", $("#errorDiv"));
         return;
-      }
-      reset();
-      alert("DOCTOR ADD SUCCESSFULLY")
-      window.location.href = "../login/view.html";
-    } catch (e) {
-      errorMessage(NET_ERR, $("#errorDiv"));
     }
-  })();
+    load();
+    const request = new Request(backend + '/doctores', {method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(doctor)
+    });
+    
+    (async () => {
+        try {
+            const response = await fetch(request);
+            if (!response.ok) {
+                errorMessage(response.status, $("#errorDiv"));
+                return;
+            }
+            await addImagen();
+            reset();
+            alert("DOCTOR ADD SUCCESSFULLY")
+            window.location.href = "../login/view.html";
+        } catch (e) {
+            errorMessage(NET_ERR, $("#errorDiv"));
+        }
+    })();
 }
 
 
-function show() {
-  mostrarHorario();
-  $('#add-modal').modal('show');
-}
-
-
-
+////////////////////////////////////////////////////////////
 function crearHorario() {
-  for (i = 0; i < 5; i++) {
-    $(".schedule-row").append(
-      `<div class="col schedule-col">
+    for (i = 0; i < 5; i++) {
+        $(".schedule-row").append(
+                `<div class="col schedule-col">
         <div class="d-flex gap-1">
         <input class="form-check-input" type="checkbox" id="checked">
         <p>${dias[i]}</p>
@@ -115,49 +117,56 @@ function crearHorario() {
             </div>
           </div>
         </div>`
-    );
-  }
+                );
+    }
 
-  $(".schedule-col #checked").click(
-    (e) => {
-      e.target.parentNode.parentNode.querySelector(".schedule-body").classList.toggle("active");
+    $(".schedule-col #checked").click(
+            (e) => {
+        e.target.parentNode.parentNode.querySelector(".schedule-body").classList.toggle("active");
     })
 }
 
-function guardarHorario() {
-  $(".schedule-col").each(
-    (i, e) => {
-      var obj = new Object();
-      obj.checked = e.querySelector("#checked").checked;
-      obj.from = parseInt(e.querySelector("#desde").value);
-      obj.to = parseInt(e.querySelector("#hasta").value);
-      horario[i] = obj;
+function mostrarHorario() {
+    $(".schedule-col").each(
+            (i, e) => {
+        e.querySelector("#checked").checked = false;
+        e.querySelector(".schedule-body").classList.remove("active");
+        e.querySelector("#desde").value = "8";
+        e.querySelector("#hasta").value = "8";
+        if (horario.length != 0 && horario[i].trabaja) {
+            e.querySelector("#checked").checked = true;
+            e.querySelector(".schedule-body").classList.add("active");
+            e.querySelector("#desde").value = horario[i].desde;
+            e.querySelector("#hasta").value = horario[i].hasta;
+        }
     }
-  );
+    )
 }
 
-function mostrarHorario() {
-  $(".schedule-col").each(
-    (i, e) => {
-      e.querySelector("#checked").checked = false;
-      e.querySelector(".schedule-body").classList.remove("active");
-      e.querySelector("#desde").value = "8";
-      e.querySelector("#hasta").value = "8";
-      if (horario.length != 0 && horario[i].trabaja) {
-        e.querySelector("#checked").checked = true;
-        e.querySelector(".schedule-body").classList.add("active");
-        e.querySelector("#desde").value = horario[i].desde;
-        e.querySelector("#hasta").value = horario[i].hasta;
-      }
+function guardarHorario() {
+    $(".schedule-col").each(
+            (i, e) => {
+        var obj = new Object();
+        obj.checked = e.querySelector("#checked").checked;
+        obj.from = parseInt(e.querySelector("#desde").value);
+        obj.to = parseInt(e.querySelector("#hasta").value);
+        horario[i] = obj;
     }
-  )
+    );
+}
+
+
+////////////////////////////////////////////////////////////
+function show() {
+    mostrarHorario();
+    $('#add-modal').modal('show');
 }
 
 function loaded() {
-  crearHorario();
-  $("#registrar").click(add);
-  $("#horario").click(show);
-  $("#guardar-horario").click(guardarHorario);
+    crearHorario();
+    $("#registrar").click(add);
+    $("#horario").click(show);
+    $("#guardar-horario").click(guardarHorario);
 }
 
 $(loaded);

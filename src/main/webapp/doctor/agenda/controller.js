@@ -120,10 +120,13 @@ async function fetchAndList() {
 
 function agregarPersonas() {
     $('#persona').empty();
+    $('#persona').append(`
+        <option value="">Seleccione Un Paciente</option>
+    `);
     personas.forEach((p) => {
         $('#persona').append(`
         <option value="${p.id}">${p.cedula}-${p.nombre}</option>
-        `)
+        `);
     });
 }
 
@@ -277,6 +280,10 @@ function valAgenda(list, numDia) {
 
 ////////////////////////////////////////////
 function agregarCitas() {
+    if ($('#persona').val() == ""){
+      errorMessage("Seleccione un Paciente Valido", $("#add-modal #errorDiv"));
+      return;
+    }
     load();
     const request = new Request(backend + '/citas',
             {method: 'POST',
@@ -301,6 +308,10 @@ function agregarCitas() {
 
 
 function editCita() {
+    if ($('#persona').val() == ""){
+      errorMessage("Seleccione un Paciente Valido", $("#add-modal-2 #errorDiv"));
+      return;
+    }
     load();
     const request = new Request(backend + '/citas',
             {method: 'PUT', headers: {'Content-Type': 'application/json'},

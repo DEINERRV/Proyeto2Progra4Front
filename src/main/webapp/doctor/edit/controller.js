@@ -16,11 +16,6 @@ var backend = "http://localhost:8080/ExpedienteMedicoBackEnd/api";
 const NET_ERR = 999;
 
 
-function show() {
-    mostrarHorario();
-    $('#add-modal').modal('show');
-}
-
 function crearHorario() {
     for (i = 0; i < 5; i++) {
         $(".schedule-row").append(
@@ -89,11 +84,22 @@ function mostrarHorario() {
 }
 
 
+////////////////////////////////////////////////////////////
+function cargarImagen(){
+    $('#img-perfil').prepend(`<img src="${backend}/doctores/${doctor.cedula}/imagen" alt="Foto Perfil" class="img-thumbnail" style="width: 15rem; height: 15rem">`)
+}
+
+function show() {
+    mostrarHorario();
+    $('#add-modal').modal('show');
+}
+
 function loaded() {
     cargarDoctor();
     crearSideVar('../../');
     crearHorario();
     cargarDoctor();
+    cargarImagen();
     $("#horario").click(show);
 }
 

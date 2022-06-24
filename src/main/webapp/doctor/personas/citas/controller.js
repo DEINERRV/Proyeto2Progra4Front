@@ -78,19 +78,19 @@ function cargarExams(idCita) {
             }
             examenes = await response.json();
             $('#id-cita').text(idCita);
-            showExamenes(examenes);
+            showExamenes(examenes,idCita);
         } catch (e) {
             errorMessage(NET_ERR, $("#buscarDiv #errorDiv"));
         }
     })();
 }
 
-function showExamenes(examenes){
+function showExamenes(examenes,idCita){
     $('#examenes').empty();
     examenes.forEach((e)=>{
         $('#examenes').append(`
             <li class="list-group-item d-flex justify-content-between">
-                <a href="${backend}/examenes/${persona.id}/${cita.id}/${e.nombre}/pdf">${e.nombre}</a>
+                <a href="${backend}/examenes/${persona.id}/${idCita}/${e.nombre}/pdf">${e.nombre}</a>
                 <div > <button type="button" class="close" id="elim" data-idPDF="${e.id}"> <span aria-hidden="true">&times;</span> </button> </div>
             </li>
             

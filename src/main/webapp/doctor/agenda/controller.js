@@ -34,6 +34,7 @@ function show(dia, hora, modo, idUs, idC, text,motivo,prescripcion) {
                     $('#aplicar').off('click').on('click', agregarCitas);
                     $('#modal-tam').removeClass('modal-lg');
                     $('#modal-tam').css({'width':'400px'});
+                    $('#elim').addClass('d-none');
                     break;
                 case 'si':
                     $('#titulo').text('Editar Cita');
@@ -46,22 +47,27 @@ function show(dia, hora, modo, idUs, idC, text,motivo,prescripcion) {
                     }
                     $('#modal-tam').addClass('modal-lg');
                     $('#modal-tam').css({'width':''});
+                    $('#elim').removeClass('d-none');
+                    $('#elim').off('click').on('click',()=>{
+                        elimCita(idC);
+                        $('#add-modal').modal('hide');
+                    });
                     break;
             }
 
 
             //Abajo, obtener el hasta
             var hor = parseInt(hora.split(':')[0]);
-            if (hor < 10) {
-                hora = '0' + hora;
-                hor = '0' + hor;
-            }
             var min = parseInt(hora.split(':')[1]) + doctor.tiempo;
             if (min >= 60) {
                 hor++;
                 min = '00';
             } else if (min < 10)
                 min = '0' + min.toString();
+            if (hor < 10) {
+                hora = '0' + hora;
+                hor = '0' + hor;
+            }
             cita.dia = dia;
             cita.from = hora;
             cita.to = hor + ':' + min;
@@ -271,7 +277,7 @@ function valAgenda(list, numDia) {
                     $(d).parent()[0].dataset.prescripcion = c.prescripcion;
                     throw 'a';
                 }
-            })
+            });
         } catch (e) {
         }
     });
@@ -308,7 +314,7 @@ function agregarCitas() {
 
 
 function editCita() {
-    if ($('#persona').val() == ""){
+    if ($('#persona-2').val() == ""){
       errorMessage("Seleccione un Paciente Valido", $("#add-modal-2 #errorDiv"));
       return;
     }
@@ -333,6 +339,25 @@ function editCita() {
     reset();
 }
 
+
+function elimCita(idCita){
+    const request = new Request(backend + '/citas/' + idCita, {method: 'DELETE', headers: {}});
+    (async () => {
+        try {
+            const response = await fetch(request);
+            if (!response.ok) {
+                errorMessage(response.status, $("#add-modal #errorDiv"));
+                return;
+            }
+            location.reload();
+            
+        } catch (e) {
+            errorMessage(NET_ERR, $("#add-modal #errorDiv"));
+        }
+    })();
+    reset();
+}
+
 //////////////////////////////////
 function loaded() {
     cargarDoctor();
@@ -343,7 +368,7 @@ function loaded() {
     });
     $('#prev').click((e) => {
         getSemanaAndShow('siguiente', semana[0])
-    })
+    });
     $('#aplicar').off('click').on('click', agregarCitas);
     root='../../';
 }

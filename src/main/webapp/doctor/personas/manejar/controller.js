@@ -28,7 +28,7 @@ function render() {
     $('#add-modal').modal('show');  
 }
 
-function fetchAndList() {
+async function fetchAndList() {
     const request = new Request(backend + '/personas/'+doctor.cedula, {method: 'GET', headers: {}});
     (async () => {
         try {
@@ -172,7 +172,7 @@ function add() {
                 errorMessage(response.status, $("#add-modal #errorDiv"));
                 return;
             }
-            fetchAndList();
+            await fetchAndList();
             reset();
             $('#add-modal').modal('hide');
         } catch (e) {
@@ -260,6 +260,7 @@ function loaded() {
     fetchAndList();
     $("#crear").click(makenew);
     $("#buscar").on("click", search);
+    root='../../../';
 }
 
 $(loaded);

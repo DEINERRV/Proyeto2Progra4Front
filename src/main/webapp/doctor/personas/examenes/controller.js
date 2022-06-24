@@ -39,6 +39,7 @@ async function cargarCitas() {
 
 ////////////////////////////////////////////////////////////
 async function cargarDatos(){
+    $('#listado').empty();
     await cargarCitas();
     cargarExamenes();
 }
@@ -63,7 +64,6 @@ async function cargarExamenes() {
 }
 
 function list(cita) {
-    $("#listado").html("");
     examenes.forEach((p) => {
         row($("#listado"), p, cita);
     });
@@ -173,7 +173,7 @@ function loaded() {
         cargarDatos();
     });
     crearSideVar('../../../');
-    
+    root='../../../';
 }
 
 $(loaded);

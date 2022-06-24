@@ -345,6 +345,7 @@ function loaded() {
         getSemanaAndShow('siguiente', semana[0])
     })
     $('#aplicar').off('click').on('click', agregarCitas);
+    root='../../';
 }
 
 $(loaded);

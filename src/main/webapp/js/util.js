@@ -1,3 +1,5 @@
+var root = '';
+
 function crearSideVar(root) {
     $("#viewport").prepend(
       `<div id="sidebar">
@@ -24,10 +26,10 @@ function crearSideVar(root) {
         </div>
         <div>
             <li>
-                <img src="${backend}/doctores/${doctor.cedula}/imagen" alt="Foto Perfil" class="ml-4 img-thumbnail" style="width: 8rem; height: 8rem">
+                <img src="${backend}/doctores/${doctor.cedula}/imagen" alt="Foto Perfil" class="ms-4 img-thumbnail" style="width: 8rem; height: 8rem">
             </li>
             <li>
-                <a href="#">
+                <a id="cerrarSesion" href="#">
                     <i class="zmdi zmdi-comment-more"></i>Cerrar sesion
                 </a>
             </li>
@@ -36,6 +38,48 @@ function crearSideVar(root) {
       </ul>
     </div>`
     );
+    $('#cerrarSesion').on('click',()=>{cerrarsesion();})
+}
+
+function crearSideVarAdmin() {
+    $("#viewport").prepend(
+      `<div id="sidebar">
+      <header>
+        <a href="#">Electronic Medical Record</a>
+      </header>
+      <ul class="nav d-flex flex-column justify-content-between">
+        <div> 
+            <li>
+                <a href="#">
+                    <i class="zmdi zmdi-view-dashboard"></i> Algo
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="zmdi zmdi-link"></i> Algo
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="zmdi zmdi-widgets"></i> Algo
+                </a>
+            </li>
+        </div>
+        <div>
+            <li>
+                <img src="../../img/logo.png" alt="Foto Perfil" class="ms-4 img-thumbnail" style="width: 8rem; height: 8rem">
+            </li>
+            <li>
+                <a id="cerrarSesion" href="#">
+                    <i class="zmdi zmdi-comment-more"></i>Cerrar sesion
+                </a>
+            </li>
+        </div>
+        
+      </ul>
+    </div>`
+    );
+    $('#cerrarSesion').on('click',()=>{cerrarsesion();})
 }
 
 
@@ -74,7 +118,7 @@ function errorMessage(status, place) {
     place.empty();
     place.append('<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
             error +
-            '<button type="button" class="ml-2 bg-transparent btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">X</span></button></div>');
+            '<button type="button" class="ml-2 bg-transparent btn-close" data-bs-dismiss="alert" aria-label="Close"><span id="x" aria-hidden="true">X</span></button></div>');
     return;
 }
 
@@ -89,4 +133,10 @@ function cargarDoctor(){
     $("#locacion").val(doctor.locacion);
     $("#precio").val(doctor.precio);
     $("#tiempo").val(doctor.tiempo);
+}
+
+function cerrarsesion(){
+    sessionStorage.clear();
+    localStorage.clear();
+    window.location.href = root+"login/view.html";
 }

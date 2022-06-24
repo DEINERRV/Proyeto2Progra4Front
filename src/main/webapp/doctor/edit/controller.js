@@ -101,6 +101,7 @@ function loaded() {
     cargarDoctor();
     cargarImagen();
     $("#horario").click(show);
+    root='../../';
 }
 
 $(loaded);

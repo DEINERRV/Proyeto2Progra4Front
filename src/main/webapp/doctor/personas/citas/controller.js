@@ -231,6 +231,7 @@ function loaded() {
     $('#agregarPDF').click((e) => {
         addExamen();
     });
+    root='../../../';
 }
 
 $(loaded);

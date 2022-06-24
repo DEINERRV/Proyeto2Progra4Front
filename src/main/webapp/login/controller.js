@@ -51,7 +51,8 @@ function autentificarDoctor() {
       }
       valido = await response.json();
       if(!valido){
-          errorMessage("Credenciales no validas", $("#errorDiv"));
+          errorMessage("Credenciales no validas <br>Si ya se registro espere a que un Admin admita su solicituda", $("#errorDiv"));
+          $('#x').text('');
         return;
       }
       
